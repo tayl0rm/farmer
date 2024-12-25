@@ -1,0 +1,18 @@
+{
+    "image": "mcr.microsoft.com/devcontainers/universal:2",
+    "features": {
+      "ghcr.io/devcontainers/features/terraform:1": {}
+    },
+    "customizations": {
+		"vscode": {
+			"settings": {},
+			"extensions": [
+				"ms-azuretools.vscode-docker",
+				"esbenp.prettier-vscode",
+				"oderwat.indent-rainbow",
+				"vscode-icons-team.vscode-icons",
+				"github.vscode-github-actions"
+			]
+		}
+	}
+  }
