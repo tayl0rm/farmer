@@ -30,6 +30,7 @@ jobs:
  
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
+      id: init
       run: terraform init
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
@@ -37,17 +38,35 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
+      id: plan
       run: terraform plan -input=false -out=planfile.json
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
     
-    - name: Post PR comment
-      uses: borchero/terraform-plan-comment@v2
+    - name: Update Pull Request
+      uses: actions/github-script@v7
       with:
-        token: ${{ secrets.PR_TOKEN }}
-        planfile: planfile.json
-        working-directory: terraform/core
+        github-token: ${{ secrets.PR_TOKEN }}
+        script: |
+          const output = `#### Terraform Initialization 🤖\`${{ steps.init.outcome }}\`
+          #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+          <details><summary>Show Plan</summary>
 
+          \`\`\`\n
+          ${{ steps.plan.outputs.stdout }}
+          \`\`\`
+
+          </details>
+
+          *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
+            
       # On push to "main", build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
