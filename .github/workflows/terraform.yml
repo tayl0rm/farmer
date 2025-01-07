@@ -37,7 +37,7 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -out .planfile
+      run: terraform plan -input=false -out=planfile.json
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
     
@@ -45,7 +45,7 @@ jobs:
       uses: borchero/terraform-plan-comment@v2
       with:
         token: ${{ secrets.PR_TOKEN }}
-        planfile: .planfile
+        planfile: planfile.json
         working-directory: terraform/core
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
