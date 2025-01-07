@@ -44,7 +44,7 @@ jobs:
     - name: Post PR comment
       uses: borchero/terraform-plan-comment@v2
       with:
-        token: ${{ github.token }}
+        token: ${{ secrets.PR_TOKEN }}
         planfile: .planfile
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
